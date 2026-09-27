@@ -16,11 +16,11 @@
   :root{
     color-scheme:dark;
     forced-color-adjust:none;
-    --case:      #2c2e31;
-    --case-hi:   #44474b;
-    --case-lo:   #1a1c1e;
-    --panel:     #3c3e40;
-    --outline:   #8d8f8e;
+    --case:      #232528;
+    --case-hi:   #3a3d41;
+    --case-lo:   #111315;
+    --panel:     #2e3032;
+    --outline:   #9b9d9c;
     --legend:    #ecebe6;
     --gold:      #d8c44e;
     --k-fn:      #9a9c97;
@@ -36,7 +36,7 @@
     --k-red:     #d42130;
     --k-red-lo:  #a3131f;
     --led:       #ff2f22;
-    --led-off:   #3a0a09;
+    --led-off:   #40100e;
   }
   *{box-sizing:border-box}
   html{-webkit-text-size-adjust:100%}
@@ -65,21 +65,21 @@
       0 4px 12px rgba(0,0,0,.45);
   }
   .brand{
-    height:22px;margin:0 30px;
-    background:linear-gradient(180deg,#f2f1ec,#cfcdc6);
-    border-radius:4px;
-    display:flex;align-items:center;justify-content:center;
+    height:17px;margin:0 36px;
+    background:linear-gradient(180deg,#f4f3ee,#d2d0c9);
+    border-radius:3px;
+    display:flex;align-items:center;padding-left:16px;
   }
   .brand span{
-    color:#25262a;font-size:10px;font-weight:800;letter-spacing:.14em;
+    color:#25262a;font-size:8px;font-weight:800;letter-spacing:.1em;
   }
 
   /* ---------------- display ---------------- */
   .filter{
     margin:7px 12px 0;
-    background:linear-gradient(176deg,#8d1a1c 0%,#5c0f13 18%,#3d080c 60%,#571016 100%);
+    background:linear-gradient(176deg,#7d1618 0%,#45090d 22%,#2c0507 58%,#4a0d12 100%);
     border-radius:5px;
-    padding:11px 10px 13px;
+    padding:7px 9px 8px;
     box-shadow:
       0 2px 5px rgba(0,0,0,.6),
       0 1px 0 rgba(255,140,140,.28) inset,
@@ -92,29 +92,29 @@
   }
   #led{display:block;width:100%;height:auto}
   .seg-on{fill:var(--led);filter:url(#glow)}
-  .seg-off{fill:var(--led-off)}
-  .lens{fill:url(#bub);pointer-events:none}
+  .seg-off{fill:var(--led-off);opacity:.45}
+  
 
   /* ---------------- mode switch ---------------- */
   .switch{
     margin:9px 12px 0;
     background:linear-gradient(180deg,#f4f3ee,#dedcd5);
     border-radius:3px;
-    padding:4px 10px 5px;
+    padding:3px 10px 4px;
   }
-  .swlabels{display:flex;justify-content:center;gap:30px;margin-bottom:3px}
+  .swlabels{display:flex;justify-content:center;gap:26px;margin-bottom:2px}
   .swlabels button{
     background:none;border:none;padding:0 2px;cursor:pointer;
-    font:inherit;font-size:10px;font-weight:600;color:#3a3b3e;
+    font:inherit;font-size:8.5px;font-weight:600;color:#3d3e41;
   }
   .swlabels button.on{color:#0a0a0a;font-weight:800}
   .track{
-    position:relative;height:13px;width:118px;margin:0 auto;
+    position:relative;height:10px;width:96px;margin:0 auto;
     background:linear-gradient(180deg,#25262a,#3a3c40);
     border-radius:3px;box-shadow:0 1px 2px rgba(0,0,0,.5) inset;
   }
   .knob{
-    position:absolute;top:1px;width:36px;height:11px;border-radius:2px;
+    position:absolute;top:1px;width:30px;height:8px;border-radius:2px;
     background:linear-gradient(180deg,#e9e7e0,#b9b7b0);
     box-shadow:0 1px 2px rgba(0,0,0,.45);
     transition:left .13s ease;
@@ -126,22 +126,22 @@
     background:
       radial-gradient(1px 1px at 22% 32%, rgba(255,255,255,.07) 50%, transparent 50%),
       radial-gradient(1px 1px at 68% 62%, rgba(255,255,255,.055) 50%, transparent 50%),
-      linear-gradient(180deg,#46484a,var(--panel) 40%,#333537);
+      linear-gradient(180deg,#37393b,var(--panel) 38%,#252729);
     background-size:4px 4px,5px 5px,100% 100%;
     border-radius:6px;
     padding:7px 8px 12px;
   }
   .logo{
     text-align:right;color:var(--legend);
-    font-size:17px;font-weight:700;letter-spacing:.1px;
+    font-size:13.5px;font-weight:700;letter-spacing:.1px;
     font-family:"Trebuchet MS","Segoe UI",Verdana,sans-serif;
-    margin:1px 4px 8px 0;
+    margin:1px 3px 6px 0;
     text-shadow:0 1px 0 rgba(0,0,0,.55);
   }
   .grid{
     display:grid;
     grid-template-columns:repeat(5,1fr);
-    gap:4px 4px;
+    gap:5px 4px;
     align-items:start;
   }
   .cell{
@@ -152,9 +152,11 @@
     min-width:0;
   }
   .cell.wide{grid-column:span 2}
+  /* F sits in a double-width cell but the keycap itself is normal size */
+  .cell.wide button.key{width:42%}
   .cell.blank{border:none}
   .lbl{
-    font-size:10px;font-weight:600;color:var(--legend);
+    font-size:9.5px;font-weight:600;color:var(--legend);
     line-height:1.05;white-space:nowrap;
   }
   .lbl.sm{font-size:9px}
@@ -169,7 +171,7 @@
 
   button.key{
     -webkit-appearance:none;appearance:none;border:none;
-    width:100%;height:16px;border-radius:3px;padding:0;
+    width:100%;height:17px;border-radius:3px;padding:0;
     cursor:pointer;display:flex;align-items:center;justify-content:center;
     font-family:inherit;font-size:10px;font-weight:700;line-height:1;
     -webkit-user-select:none;user-select:none;
@@ -179,7 +181,7 @@
       0 2px 2px rgba(0,0,0,.55);
     transition:transform .05s linear, box-shadow .05s linear;
   }
-  button.key.cap{height:21px;font-size:12px}
+  button.key.cap{height:20px;font-size:11.5px}
   button.key:active, button.key.hit{
     transform:translateY(2px);
     box-shadow:0 1px 3px rgba(0,0,0,.6) inset;
@@ -189,7 +191,7 @@
   .k-fn  {background:linear-gradient(180deg,var(--k-fn),var(--k-fn-lo))}
   .k-num {background:linear-gradient(180deg,var(--k-num),var(--k-num-lo));color:#1a1a18}
   .k-op  {background:linear-gradient(180deg,#2e3033 0%,var(--k-op) 38%,var(--k-op-lo) 100%);color:#f0efe9}
-  .k-f   {background:linear-gradient(180deg,#ffdd42,var(--k-f) 50%,var(--k-f-lo));height:19px}
+  .k-f   {background:linear-gradient(180deg,#ffdd42,var(--k-f) 50%,var(--k-f-lo))}
   .k-prog{background:linear-gradient(180deg,#9ed1ee,var(--k-prog) 48%,var(--k-prog-lo))}
   .k-red {background:linear-gradient(180deg,#ec3e4c,var(--k-red) 45%,var(--k-red-lo));color:#fff}
   .k-iv  {background:linear-gradient(180deg,#fbfaf4,#dedcd3);color:#1a1a18}
@@ -239,7 +241,7 @@
   <div class="brand"><span>NOVUS</span></div>
 
   <div class="filter">
-    <svg id="led" viewBox="0 0 470 88" role="img" aria-label="Calculator display">
+    <svg id="led" viewBox="0 0 820 200" role="img" aria-label="Calculator display">
       <defs>
         <filter id="glow" x="-70%" y="-70%" width="240%" height="240%">
           <feGaussianBlur stdDeviation="3" result="b"/>
@@ -335,7 +337,7 @@ const NS="http://www.w3.org/2000/svg";
 const gDigits = document.getElementById("digits");
 const cells = [];
 (function build(){
-  const W=42, GAP=7, X0=16, Y0=7;
+  const W=42, GAP=7, X0=336, Y0=62;
   for(let i=0;i<POS;i++){
     const ox = X0 + i*(W+GAP), oy = Y0;
     const g = document.createElementNS(NS,"g"), segs = {};
@@ -353,11 +355,6 @@ const cells = [];
     dp.setAttribute("cx",ox+38); dp.setAttribute("cy",oy+66);
     dp.setAttribute("r",3.4); dp.setAttribute("class","seg-off");
     g.appendChild(dp); segs.dp=dp;
-    const lens=document.createElementNS(NS,"ellipse");
-    lens.setAttribute("cx",ox+19); lens.setAttribute("cy",oy+36);
-    lens.setAttribute("rx",24); lens.setAttribute("ry",41);
-    lens.setAttribute("class","lens");
-    g.appendChild(lens);
     gDigits.appendChild(g); cells.push(segs);
   }
 })();
@@ -946,7 +943,7 @@ function setMode(mode){
   P.paused = false;
   if(mode !== "LOAD") P.pc = 0;
   const i = MODES.findIndex(m=>m.toUpperCase()===mode);
-  knob.style.left = (4 + i*39) + "px";
+  knob.style.left = (3 + i*32) + "px";
   [...swl.children].forEach((b,j)=>b.classList.toggle("on", j===i));
   trace(mode.toLowerCase());
   render();
