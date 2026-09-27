@@ -53,7 +53,7 @@
 
   /* ---------------- shell ---------------- */
   .shell{
-    width:322px;
+    width:312px;
     background:linear-gradient(168deg,var(--case-hi) 0%,var(--case) 26%,var(--case-lo) 100%);
     border:1px solid #101214;
     border-radius:22px;
@@ -129,7 +129,7 @@
       linear-gradient(180deg,#37393b,var(--panel) 38%,#252729);
     background-size:4px 4px,5px 5px,100% 100%;
     border-radius:6px;
-    padding:8px 8px 14px;
+    padding:9px 8px 15px;
   }
   .logo{
     text-align:right;color:var(--legend);
@@ -171,7 +171,7 @@
 
   button.key{
     -webkit-appearance:none;appearance:none;border:none;
-    width:100%;height:18px;border-radius:3px;padding:0;
+    width:100%;height:19px;border-radius:3px;padding:0;
     cursor:pointer;display:flex;align-items:center;justify-content:center;
     font-family:inherit;font-size:10px;font-weight:700;line-height:1;
     -webkit-user-select:none;user-select:none;
@@ -181,7 +181,7 @@
       0 2px 2px rgba(0,0,0,.55);
     transition:transform .05s linear, box-shadow .05s linear;
   }
-  button.key.cap{height:22px;font-size:12px}
+  button.key.cap{height:23px;font-size:12px}
   button.key:active, button.key.hit{
     transform:translateY(2px);
     box-shadow:0 1px 3px rgba(0,0,0,.6) inset;
@@ -200,7 +200,7 @@
   .armed .sub{color:#ffe98a}
 
   /* ---------------- inspector ---------------- */
-  .inspect{width:322px;color:#eceadf;font-size:12px;line-height:1.55}
+  .inspect{width:312px;color:#eceadf;font-size:12px;line-height:1.55}
   .inspect h2{font-size:10px;font-weight:700;letter-spacing:.16em;margin:0 0 7px;color:#d6d3c8}
   .box{
     background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.14);
@@ -980,11 +980,11 @@ function fit(){
   const stage = document.getElementById("stage");
   const shell = document.getElementById("shell");
   const avail = document.documentElement.clientWidth - 24;
-  const s = Math.min(1.35, Math.max(0.75, avail / 322));
+  const s = Math.min(1.45, Math.max(0.75, avail / 312));
   stage.style.transform = "scale(" + s + ")";
   stage.style.height = (shell.offsetHeight * s) + "px";
   document.querySelectorAll(".inspect").forEach(el=>{
-    el.style.width = Math.min(322 * s, avail) + "px";
+    el.style.width = Math.min(312 * s, avail) + "px";
   });
 }
 window.addEventListener("resize", fit);
