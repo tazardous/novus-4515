@@ -1,0 +1,16 @@
+{
+  "name": "Novus 4515 Mathematician PR",
+  "short_name": "Novus 4515",
+  "description": "Emulator of the 1976 Novus 4515 Mathematician PR: three-level RPN stack plus 100-step learn-mode programming.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#16181a",
+  "theme_color": "#16181a",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

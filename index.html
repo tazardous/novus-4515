@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#16181a">
+<meta name="color-scheme" content="dark">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Novus 4515 Mathematician PR</title>
+<style>
+  :root{
+    color-scheme:dark;
+    forced-color-adjust:none;
+    --case:      #2c2e31;
+    --case-hi:   #44474b;
+    --case-lo:   #1a1c1e;
+    --panel:     #3c3e40;
+    --outline:   #8d8f8e;
+    --legend:    #ecebe6;
+    --gold:      #d8c44e;
+    --k-fn:      #9a9c97;
+    --k-fn-lo:   #7e807c;
+    --k-num:     #eae8e0;
+    --k-num-lo:  #cbc9c1;
+    --k-op:      #17181a;
+    --k-op-lo:   #050506;
+    --k-f:       #f6c81a;
+    --k-f-lo:    #d5a707;
+    --k-prog:    #7ab8dc;
+    --k-prog-lo: #4e8fb8;
+    --k-red:     #d42130;
+    --k-red-lo:  #a3131f;
+    --led:       #ff2f22;
+    --led-off:   #3a0a09;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  html,body{margin:0;padding:0}
+  body,button{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+  body{
+    background:radial-gradient(130% 100% at 50% -10%, #6e7175 0%, #46484b 55%, #2a2c2e 100%);
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+    min-height:100vh;
+    padding:max(18px,env(safe-area-inset-top)) 12px calc(40px + env(safe-area-inset-bottom));
+    display:flex;flex-direction:column;align-items:center;gap:22px;
+  }
+  #stage{transform-origin:top center}
+
+  /* ---------------- shell ---------------- */
+  .shell{
+    width:344px;
+    background:linear-gradient(168deg,var(--case-hi) 0%,var(--case) 26%,var(--case-lo) 100%);
+    border:1px solid #101214;
+    border-radius:22px;
+    padding:9px 10px 20px;
+    box-shadow:
+      0 1px 0 rgba(255,255,255,.18) inset,
+      0 -3px 12px rgba(0,0,0,.5) inset,
+      0 22px 46px rgba(0,0,0,.6),
+      0 4px 12px rgba(0,0,0,.45);
+  }
+  .brand{
+    height:22px;margin:0 30px;
+    background:linear-gradient(180deg,#f2f1ec,#cfcdc6);
+    border-radius:4px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .brand span{
+    color:#25262a;font-size:10px;font-weight:800;letter-spacing:.14em;
+  }
+
+  /* ---------------- display ---------------- */
+  .filter{
+    margin:7px 12px 0;
+    background:linear-gradient(176deg,#8d1a1c 0%,#5c0f13 18%,#3d080c 60%,#571016 100%);
+    border-radius:5px;
+    padding:11px 10px 13px;
+    box-shadow:
+      0 2px 5px rgba(0,0,0,.6),
+      0 1px 0 rgba(255,140,140,.28) inset,
+      0 -2px 8px rgba(0,0,0,.6) inset;
+    position:relative;overflow:hidden;
+  }
+  .filter::after{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:linear-gradient(102deg,rgba(255,255,255,.16) 0%,rgba(255,255,255,.03) 34%,rgba(255,255,255,0) 55%);
+  }
+  #led{display:block;width:100%;height:auto}
+  .seg-on{fill:var(--led);filter:url(#glow)}
+  .seg-off{fill:var(--led-off)}
+  .lens{fill:url(#bub);pointer-events:none}
+
+  /* ---------------- mode switch ---------------- */
+  .switch{
+    margin:9px 12px 0;
+    background:linear-gradient(180deg,#f4f3ee,#dedcd5);
+    border-radius:3px;
+    padding:4px 10px 5px;
+  }
+  .swlabels{display:flex;justify-content:center;gap:30px;margin-bottom:3px}
+  .swlabels button{
+    background:none;border:none;padding:0 2px;cursor:pointer;
+    font:inherit;font-size:10px;font-weight:600;color:#3a3b3e;
+  }
+  .swlabels button.on{color:#0a0a0a;font-weight:800}
+  .track{
+    position:relative;height:13px;width:118px;margin:0 auto;
+    background:linear-gradient(180deg,#25262a,#3a3c40);
+    border-radius:3px;box-shadow:0 1px 2px rgba(0,0,0,.5) inset;
+  }
+  .knob{
+    position:absolute;top:1px;width:36px;height:11px;border-radius:2px;
+    background:linear-gradient(180deg,#e9e7e0,#b9b7b0);
+    box-shadow:0 1px 2px rgba(0,0,0,.45);
+    transition:left .13s ease;
+  }
+
+  /* ---------------- keypad ---------------- */
+  .panel{
+    margin:8px 10px 0;
+    background:
+      radial-gradient(1px 1px at 22% 32%, rgba(255,255,255,.07) 50%, transparent 50%),
+      radial-gradient(1px 1px at 68% 62%, rgba(255,255,255,.055) 50%, transparent 50%),
+      linear-gradient(180deg,#46484a,var(--panel) 40%,#333537);
+    background-size:4px 4px,5px 5px,100% 100%;
+    border-radius:6px;
+    padding:7px 8px 12px;
+  }
+  .logo{
+    text-align:right;color:var(--legend);
+    font-size:17px;font-weight:700;letter-spacing:.1px;
+    font-family:"Trebuchet MS","Segoe UI",Verdana,sans-serif;
+    margin:1px 4px 8px 0;
+    text-shadow:0 1px 0 rgba(0,0,0,.55);
+  }
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:4px 4px;
+    align-items:start;
+  }
+  .cell{
+    border:1px solid var(--outline);
+    border-radius:6px;
+    padding:2px 3px 3px;
+    display:flex;flex-direction:column;align-items:center;gap:2px;
+    min-width:0;
+  }
+  .cell.wide{grid-column:span 2}
+  .cell.blank{border:none}
+  .lbl{
+    font-size:10px;font-weight:600;color:var(--legend);
+    line-height:1.05;white-space:nowrap;
+  }
+  .lbl.sm{font-size:9px}
+  .sub{
+    font-size:8.5px;font-weight:700;color:var(--gold);
+    line-height:1;white-space:nowrap;
+  }
+  sup{font-size:.7em;vertical-align:.45em}
+  .sqrt{white-space:nowrap}
+  .sqrt i{display:inline-block;width:13px;height:0;
+    border-top:1.3px solid var(--legend);vertical-align:5px;margin-left:-1px}
+
+  button.key{
+    -webkit-appearance:none;appearance:none;border:none;
+    width:100%;height:16px;border-radius:3px;padding:0;
+    cursor:pointer;display:flex;align-items:center;justify-content:center;
+    font-family:inherit;font-size:10px;font-weight:700;line-height:1;
+    -webkit-user-select:none;user-select:none;
+    box-shadow:
+      0 1px 0 rgba(255,255,255,.34) inset,
+      0 -1px 0 rgba(0,0,0,.3) inset,
+      0 2px 2px rgba(0,0,0,.55);
+    transition:transform .05s linear, box-shadow .05s linear;
+  }
+  button.key.cap{height:21px;font-size:12px}
+  button.key:active, button.key.hit{
+    transform:translateY(2px);
+    box-shadow:0 1px 3px rgba(0,0,0,.6) inset;
+  }
+  button.key:focus-visible{outline:2px solid #6fb7ff;outline-offset:2px}
+
+  .k-fn  {background:linear-gradient(180deg,var(--k-fn),var(--k-fn-lo))}
+  .k-num {background:linear-gradient(180deg,var(--k-num),var(--k-num-lo));color:#1a1a18}
+  .k-op  {background:linear-gradient(180deg,#2e3033 0%,var(--k-op) 38%,var(--k-op-lo) 100%);color:#f0efe9}
+  .k-f   {background:linear-gradient(180deg,#ffdd42,var(--k-f) 50%,var(--k-f-lo));height:19px}
+  .k-prog{background:linear-gradient(180deg,#9ed1ee,var(--k-prog) 48%,var(--k-prog-lo))}
+  .k-red {background:linear-gradient(180deg,#ec3e4c,var(--k-red) 45%,var(--k-red-lo));color:#fff}
+  .k-iv  {background:linear-gradient(180deg,#fbfaf4,#dedcd3);color:#1a1a18}
+
+  .armed .k-f{box-shadow:0 0 0 2px #fff8b8, 0 2px 3px rgba(0,0,0,.55)}
+  .armed .sub{color:#ffe98a}
+
+  /* ---------------- inspector ---------------- */
+  .inspect{width:344px;color:#eceadf;font-size:12px;line-height:1.55}
+  .inspect h2{font-size:10px;font-weight:700;letter-spacing:.16em;margin:0 0 7px;color:#d6d3c8}
+  .box{
+    background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.14);
+    border-radius:7px;padding:10px 12px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;
+  }
+  .regs{display:grid;grid-template-columns:auto 1fr;gap:3px 14px}
+  .regs b{font-weight:600;color:#9fd18b}
+  .regs span{text-align:right;color:#f3f1ea;word-break:break-all}
+  .regs .mute,.regs .mute+span{color:#9a9a92}
+  .steps{
+    margin-top:8px;max-height:150px;overflow:auto;
+    font-size:11px;line-height:1.5;color:#dcd9d1;
+  }
+  .steps .row{display:flex;gap:9px}
+  .steps .n{color:#8e9a86;min-width:22px;text-align:right}
+  .steps .cur{color:#ffd777;font-weight:700}
+  .steps .bar{color:#7fb0d8}
+  .steps .hold{color:#ef9a5a}
+  .log{margin-top:8px;font-size:11px;color:#ddd9ce;min-height:30px;word-break:break-word}
+  .btns{display:flex;gap:8px;margin-top:9px}
+  .btns button{
+    flex:1;font:inherit;font-size:11px;padding:6px 8px;cursor:pointer;
+    background:rgba(255,255,255,.09);color:#f0eee7;
+    border:1px solid rgba(255,255,255,.2);border-radius:6px;
+  }
+  .btns button:hover{background:rgba(255,255,255,.17)}
+  .notes{margin-top:13px;font-size:11.5px;color:#e4e1d7}
+  .notes p{margin:0 0 7px}
+  .notes code{background:rgba(0,0,0,.34);padding:1px 4px;border-radius:3px;
+    font-family:ui-monospace,Menlo,Consolas,monospace;font-size:10.5px}
+  @media (prefers-reduced-motion:reduce){button.key,.knob{transition:none}}
+</style>
+</head>
+<body>
+
+<div id="stage"><div class="shell" id="shell">
+  <div class="brand"><span>NOVUS</span></div>
+
+  <div class="filter">
+    <svg id="led" viewBox="0 0 470 88" role="img" aria-label="Calculator display">
+      <defs>
+        <filter id="glow" x="-70%" y="-70%" width="240%" height="240%">
+          <feGaussianBlur stdDeviation="3" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <radialGradient id="bub" cx="38%" cy="26%" r="72%">
+          <stop offset="0%"   stop-color="#ffffff" stop-opacity=".12"/>
+          <stop offset="58%"  stop-color="#ffffff" stop-opacity=".02"/>
+          <stop offset="100%" stop-color="#000000" stop-opacity=".2"/>
+        </radialGradient>
+      </defs>
+      <g id="digits"></g>
+    </svg>
+  </div>
+
+  <div class="switch">
+    <div class="swlabels" id="swlabels"></div>
+    <div class="track"><div class="knob" id="knob"></div></div>
+  </div>
+
+  <div class="panel">
+    <div class="logo">Mathematician PR</div>
+    <div class="grid" id="grid"></div>
+  </div>
+</div></div>
+
+<div class="inspect">
+  <h2>STACK</h2>
+  <div class="box regs">
+    <b>X</b><span id="rX">0</span>
+    <b>Y</b><span id="rY">0</span>
+    <b>Z</b><span id="rZ">0</span>
+    <b class="mute">M</b><span id="rM">0</span>
+    <b class="mute">lift</b><span id="rL">on</span>
+  </div>
+
+  <h2 style="margin-top:14px">PROGRAM <span id="pStat" style="font-weight:400;letter-spacing:0;color:#9a9a92"></span></h2>
+  <div class="box">
+    <div class="steps" id="pSteps">Empty. In LOAD, touch start to begin recording.</div>
+    <div class="log" id="log">Ready.</div>
+  </div>
+
+  <div class="btns">
+    <button id="btnClear">Clear all</button>
+    <button id="btnProg">Erase program</button>
+  </div>
+
+  <div class="notes">
+    <p><b>The 4515 is a 4510 with a keystroke recorder.</b> Identical three-level
+    stack, identical register classes, identical Appendix C error limits. What it adds
+    is 100 steps of learn-mode programming: no branching, no labels, no subroutines.</p>
+    <p><b>LOAD.</b> <code>start</code> wipes program storage and begins the first
+    program. Every key after that is recorded and executed, so you debug with live
+    values as you type. <code>halt</code> records a pause for a variable &mdash; digits
+    keyed straight after one are <i>not</i> stored. Digits keyed without a preceding
+    <code>halt</code> become constants. <code>skip</code> ends one program and starts the
+    next. <code>del</code> erases the last step.</p>
+    <p><b>RUN.</b> <code>start</code> runs to the next <code>halt</code>, or resumes from
+    one. <code>skip</code> abandons the rest of the current program and moves to the next;
+    n&minus;1 touches reach the nth. <b>STEP</b> executes one step per touch of
+    <code>start</code>.</p>
+    <p>An F-shifted key counts as one step, as in the manual's listings. Over 100 steps,
+    or deleting a <code>skip</code>, shows all decimal points &mdash; the same indication
+    the display gives after 35 seconds idle.</p>
+    <p><b>Eight digits, no guard digits.</b> Registers are truncated to eight
+    positions after every operation, not just at display &mdash; the manual's sphere
+    program proves it. Every numeric result printed in the manual reproduces exactly,
+    with one exception: <code>y<sup>x</sup></code> goes through the ROM's own log and
+    antilog, so 1.085<sup>10</sup> reads 2.26098 on real hardware and 2.2609834 here.</p>
+    <p>Keyboard: digits, <code>. + - * /</code>, <code>Enter</code>,
+    <code>Backspace</code> (C), <code>f</code>, <code>c</code> (CHS), <code>x</code>,
+    <code>s</code> (start), <code>h</code> (halt), <code>k</code> (skip),
+    <code>d</code> (del), <code>Esc</code>.</p>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ============================================================
+   DISPLAY
+   ============================================================ */
+const NDIG = 8, POS = NDIG + 1;
+const SEGMAP = {
+  "0":"abcdef","1":"bc","2":"abdeg","3":"abcdg","4":"bcfg","5":"acdfg",
+  "6":"acdefg","7":"abc","8":"abcdefg","9":"abcdfg","-":"g"," ":""
+};
+const hseg=(x,y,w)=>`${x+4},${y} ${x+w-4},${y} ${x+w},${y+4} ${x+w-4},${y+8} ${x+4},${y+8} ${x},${y+4}`;
+const vseg=(x,y,h)=>`${x+4},${y} ${x+8},${y+4} ${x+8},${y+h-4} ${x+4},${y+h} ${x},${y+h-4} ${x},${y+4}`;
+const NS="http://www.w3.org/2000/svg";
+
+const gDigits = document.getElementById("digits");
+const cells = [];
+(function build(){
+  const W=42, GAP=7, X0=16, Y0=7;
+  for(let i=0;i<POS;i++){
+    const ox = X0 + i*(W+GAP), oy = Y0;
+    const g = document.createElementNS(NS,"g"), segs = {};
+    const defs = {
+      a:hseg(ox+5,oy,30),   g:hseg(ox+5,oy+30,30), d:hseg(ox+5,oy+60,30),
+      f:vseg(ox,oy+5,28),   b:vseg(ox+32,oy+5,28),
+      e:vseg(ox,oy+35,28),  c:vseg(ox+32,oy+35,28)
+    };
+    for(const k in defs){
+      const p=document.createElementNS(NS,"polygon");
+      p.setAttribute("points",defs[k]); p.setAttribute("class","seg-off");
+      g.appendChild(p); segs[k]=p;
+    }
+    const dp=document.createElementNS(NS,"circle");
+    dp.setAttribute("cx",ox+38); dp.setAttribute("cy",oy+66);
+    dp.setAttribute("r",3.4); dp.setAttribute("class","seg-off");
+    g.appendChild(dp); segs.dp=dp;
+    const lens=document.createElementNS(NS,"ellipse");
+    lens.setAttribute("cx",ox+19); lens.setAttribute("cy",oy+36);
+    lens.setAttribute("rx",24); lens.setAttribute("ry",41);
+    lens.setAttribute("class","lens");
+    g.appendChild(lens);
+    gDigits.appendChild(g); cells.push(segs);
+  }
+})();
+
+function paint(chars, dots){
+  for(let i=0;i<POS;i++){
+    const on = SEGMAP[chars[i]] ?? "";
+    for(const k of "abcdefg")
+      cells[i][k].setAttribute("class", on.includes(k) ? "seg-on" : "seg-off");
+    cells[i].dp.setAttribute("class", dots[i] ? "seg-on" : "seg-off");
+  }
+}
+/* all decimal points: 35 s shutoff, and programming faults */
+function showDots(){
+  paint(new Array(POS).fill(" "), new Array(POS).fill(true));
+}
+/* calculation error: eight zeros with every decimal point */
+function showError(){
+  const chars = new Array(POS).fill(" "), dots = new Array(POS).fill(false);
+  for(let i=1;i<POS;i++){ chars[i]="0"; dots[i]=true; }
+  paint(chars, dots);
+}
+function show(text){
+  const chars = new Array(POS).fill(" "), dots = new Array(POS).fill(false);
+  let neg=false, body=text;
+  if(body.startsWith("-")){ neg=true; body=body.slice(1); }
+  const glyphs=[];
+  for(const ch of body){
+    if(ch==="."){
+      if(glyphs.length===0) glyphs.push({c:"0",d:true});
+      else glyphs[glyphs.length-1].d=true;
+    } else glyphs.push({c:ch,d:false});
+  }
+  const slice=glyphs.slice(0,NDIG);
+  if(neg) chars[0]="-";
+  for(let i=0;i<slice.length;i++){ chars[i+1]=slice[i].c; dots[i+1]=slice[i].d; }
+  paint(chars, dots);
+}
+
+/* ============================================================
+   ENGINE — Novus 4515, identical to the 4510, per the owner's manual register diagrams.
+
+   Three levels: X, Y, Z. Nothing is ever replicated downward.
+   Operations fall into four distinct register classes:
+
+     binary  + - x /   X <- y op x   Y <- z        Z <- 0
+     powerYX           X <- y^x      Y <- old x    Z <- 0
+     unaryZ            X <- f(x)     Y unchanged   Z <- 0
+       sin cos tan, sin-1 cos-1 tan-1, ln, log, e^x
+     unaryK            X <- f(x)     Y unchanged   Z unchanged
+       1/x, sqrt, x^2, rad, deg
+
+   Stack lift is suppressed only immediately after ENT-up.
+   pi and MR lift unconditionally.
+   C-down rolls the stack down, discarding X and feeding 0 into Z.
+   F followed by C-down cancels the shift and changes nothing.
+   An error zeroes X and Z, leaves Y and M intact.
+   ============================================================ */
+const M = { x:0, y:0, z:0, mem:0, entry:null, lift:true, err:false, shift:false, asleep:false };
+const OVER = 1e8, UNDER = 1e-7;
+const TINY = 1e-8;                 // divide / reciprocal floor, Appendix C
+const PI    = 3.1415926;           // as the pi key delivers it: 8 digits, truncated
+const EXP_HI = 18.42068, EXP_LO = -28;   // e^x limits
+const PWR_HI = 18.42060;                 // y^x limit on x*ln(y)
+
+/* Appendix C - conditions for error indication. Each returns NaN to trip it. */
+const FN = {
+  recip : v => Math.abs(v) <= TINY ? NaN : 1/v,
+  sqrt  : v => v < 0 ? NaN : Math.sqrt(v),
+  sq    : v => v*v,
+  ln    : v => v <= 0 ? NaN : Math.log(v),
+  log   : v => v <= 0 ? NaN : Math.log10(v),
+  exp   : v => (v > EXP_HI || v < EXP_LO) ? NaN : Math.exp(v),
+  sin   : v => Math.abs(v) >= 401 ? NaN : Math.sin(v*D2R),
+  cos   : v => Math.abs(v) >= 401 ? NaN : Math.cos(v*D2R),
+  tan   : v => Math.abs(v) >= 90  ? NaN : Math.tan(v*D2R),
+  asin  : v => Math.abs(v) > 1 ? NaN : Math.asin(v)*R2D,
+  acos  : v => Math.abs(v) > 1 ? NaN : Math.acos(v)*R2D,
+  atan  : v => v > 99999999 ? NaN : Math.atan(v)*R2D,
+  div   : (y,x) => Math.abs(x) <= TINY ? NaN : y/x
+};
+
+/* y^x is computed by log and antilog on the real machine, which is why
+   256 ENT 4 1/x y^x gives 3.999998 rather than 4. Reproduced deliberately. */
+function powLogAntilog(y, x){
+  if(y <= 0) return NaN;
+  /* The machine computes y^x as e^(x ln y), which is why the manual's
+     4th root of 256 reads 3.999998 rather than 4. The structure is
+     reproduced here; the ROM's exact internal rounding is not, so that
+     particular discrepancy does not appear. Domain limits below are
+     Appendix C and are exact. */
+  const t = x * Math.log(y);
+  if(t > PWR_HI || t < EXP_LO) return NaN;
+  return Math.exp(t);
+}
+
+function raiseError(){ M.err=true; M.entry=null; M.x=0; M.z=0; M.lift=true; }
+
+/* Eight digit positions and no guard digits: the registers hold exactly what
+   the display can show, truncated. The manual's sphere program proves it —
+   4*pi*r^2 for r=1 reads 12.56637, and dividing that by 3 gives 4.18879
+   exactly, which only works if 12.5663704 was already cut to eight places. */
+function trunc8(v){
+  if(v === 0) return 0;
+  const neg = v < 0;
+  const a = Number(Math.abs(v).toPrecision(11));
+  const intLen = (a >= 1) ? Math.floor(Math.log10(a)) + 1 : 0;
+  const dec = Math.max(0, NDIG - intLen);
+  const p = Math.pow(10, dec);
+  const t = Math.trunc(a * p) / p;
+  return neg ? -t : t;
+}
+
+function chk(v){
+  if(!isFinite(v) || isNaN(v) || Math.abs(v) >= OVER){ raiseError(); return null; }
+  if(v !== 0 && Math.abs(v) < UNDER) return 0;
+  return trunc8(v);
+}
+function commit(){
+  if(M.entry !== null){ M.x = parseFloat(M.entry) || 0; M.entry = null; }
+}
+function digit(d){
+  if(M.entry === null){
+    if(M.lift){ M.z = M.y; M.y = M.x; }
+    M.entry = (d === ".") ? "0." : d;
+    M.lift = true;
+  } else {
+    const plain = M.entry.replace("-","").replace(".","");
+    if(d === "."){ if(!M.entry.includes(".")) M.entry += "."; }
+    else if(plain.length < NDIG) M.entry = (M.entry === "0") ? d : M.entry + d;
+  }
+}
+function chs(){
+  if(M.entry !== null) M.entry = M.entry.startsWith("-") ? M.entry.slice(1) : "-"+M.entry;
+  else M.x = -M.x;
+}
+function enter(){ commit(); M.z = M.y; M.y = M.x; M.lift = false; }
+function rollDown(){ M.entry=null; M.x=M.y; M.y=M.z; M.z=0; M.lift=true; }
+function unaryZ(fn){ commit(); const v=chk(fn(M.x)); if(v===null)return; M.x=v; M.z=0; M.lift=true; }
+function unaryK(fn){ commit(); const v=chk(fn(M.x)); if(v===null)return; M.x=v; M.lift=true; }
+function powerYX(){
+  commit(); const oldX=M.x;
+  const v=chk(powLogAntilog(M.y,M.x)); if(v===null)return;
+  M.x=v; M.y=oldX; M.z=0; M.lift=true;
+}
+function binary(fn){
+  commit(); const v=chk(fn(M.y,M.x)); if(v===null)return;
+  M.x=v; M.y=M.z; M.z=0; M.lift=true;
+}
+function liftIn(v){ commit(); M.z=M.y; M.y=M.x; M.x=v; M.lift=true; }
+function swapXY(){ commit(); const t=M.x; M.x=M.y; M.y=t; M.lift=true; }
+function memOp(fn){
+  commit();
+  const r = fn(M.mem, M.x);
+  if(!isFinite(r) || Math.abs(r) >= OVER){ raiseError(); return; }  // memory kept
+  M.mem = r; M.lift = true;
+}
+function clearAll(){
+  M.x=M.y=M.z=M.mem=0; M.entry=null; M.lift=true; M.err=false; M.shift=false;
+  render();
+}
+const D2R = Math.PI/180, R2D = 180/Math.PI;
+
+/* ============================================================
+   FORMATTING
+   ============================================================ */
+function fmt(v){
+  /* The display truncates to eight digits, it does not round. The manual's
+     4*pi*r^2 for r=3.25 reads 132.73228, where rounding would give ...29.
+     Binary noise is cleaned at 11 digits first so that values like 0.8
+     arriving as 0.7999999999999999 do not truncate to 0.7999999. */
+  if(v === 0) return "0.";
+  const neg = v < 0;
+  const a = Number(Math.abs(v).toPrecision(11));
+  const intLen = (a >= 1) ? Math.floor(Math.log10(a)) + 1 : 0;
+  if(intLen > NDIG) return null;
+  const dec = Math.max(0, NDIG - intLen);
+  const p = Math.pow(10, dec);
+  const t = Math.trunc(a * p) / p;
+  if(t === 0 && a !== 0) return null;
+  if(t >= OVER) return null;
+  let s = t.toFixed(dec);
+  if(s.includes(".")) s = s.replace(/0+$/,"");
+  if(!s.includes(".")) s += ".";
+  return (neg ? "-" : "") + s;
+}
+
+function render(){
+  if(M.asleep) showSleep();
+  else if(M.err) showError();
+  else if(M.entry !== null) show(M.entry);
+  else {
+    const t = fmt(M.x);
+    if(t === null){ M.err = true; showError(); } else show(t);
+  }
+  document.getElementById("rX").textContent = M.entry !== null ? M.entry+" \u25c0" : disp(M.x);
+  document.getElementById("rY").textContent = disp(M.y);
+  document.getElementById("rZ").textContent = disp(M.z);
+  document.getElementById("rM").textContent = disp(M.mem);
+  document.getElementById("rL").textContent = M.lift ? "on" : "off";
+  document.getElementById("shell").classList.toggle("armed", M.shift);
+}
+function disp(v){
+  if(v === 0) return "0";
+  const s = Number(v.toPrecision(12)).toString();
+  return s.length > 18 ? v.toPrecision(10) : s;
+}
+
+
+
+/* ============================================================
+   FORMATTING AND RENDER
+   ============================================================ */
+function fmt(v){
+  /* The display truncates to eight digits, it does not round. The manual's
+     4*pi*r^2 for r=3.25 reads 132.73228, where rounding would give ...29.
+     Binary noise is cleaned at 11 digits first so that values like 0.8
+     arriving as 0.7999999999999999 do not truncate to 0.7999999. */
+  if(v === 0) return "0.";
+  const neg = v < 0;
+  const a = Number(Math.abs(v).toPrecision(11));
+  const intLen = (a >= 1) ? Math.floor(Math.log10(a)) + 1 : 0;
+  if(intLen > NDIG) return null;
+  const dec = Math.max(0, NDIG - intLen);
+  const p = Math.pow(10, dec);
+  const t = Math.trunc(a * p) / p;
+  if(t === 0 && a !== 0) return null;
+  if(t >= OVER) return null;
+  let s = t.toFixed(dec);
+  if(s.includes(".")) s = s.replace(/0+$/,"");
+  if(!s.includes(".")) s += ".";
+  return (neg ? "-" : "") + s;
+}
+function disp(v){
+  if(v === 0) return "0";
+  const s = Number(v.toPrecision(12)).toString();
+  return s.length > 18 ? v.toPrecision(10) : s;
+}
+
+const logEl   = document.getElementById("log");
+const stepsEl = document.getElementById("pSteps");
+const statEl  = document.getElementById("pStat");
+let logLine = [];
+function trace(t){
+  logLine.push(t); if(logLine.length > 20) logLine.shift();
+  logEl.textContent = logLine.join("  ");
+}
+
+function render(){
+  if(M.asleep || P.progErr) showDots();
+  else if(M.err) showError();
+  else if(M.entry !== null) show(M.entry);
+  else {
+    const t = fmt(M.x);
+    if(t === null){ M.err = true; showError(); } else show(t);
+  }
+  document.getElementById("rX").textContent = M.entry !== null ? M.entry+" \u25c0" : disp(M.x);
+  document.getElementById("rY").textContent = disp(M.y);
+  document.getElementById("rZ").textContent = disp(M.z);
+  document.getElementById("rM").textContent = disp(M.mem);
+  document.getElementById("rL").textContent = M.lift ? "on" : "off";
+  document.getElementById("shell").classList.toggle("armed", M.shift);
+  renderProgram();
+}
+
+function renderProgram(){
+  statEl.textContent = " \u00b7 " + P.mode + " \u00b7 " + P.steps.length + "/100"
+    + (P.paused ? " \u00b7 paused" : "");
+  if(P.steps.length === 0){
+    stepsEl.textContent = P.armed
+      ? "Recording. Keys are stored as you press them."
+      : "Empty. In LOAD, touch start to begin recording.";
+    return;
+  }
+  let prog = 1, out = "";
+  P.steps.forEach((s,i)=>{
+    const cur = (P.mode !== "LOAD" && i === P.pc) ? " cur" : "";
+    let text, cls = "";
+    if(s.ctl === "skip"){ text = "\u2014 skip \u2014"; cls = " bar"; }
+    else if(s.ctl === "halt"){ text = "halt"; cls = " hold"; }
+    else text = (s.shift ? "F " : "") + s.k;
+    out += `<div class="row"><span class="n">${i+1}</span>`
+         + `<span class="${cls}${cur}">${text}</span></div>`;
+  });
+  stepsEl.innerHTML = out;
+  const c = stepsEl.querySelector(".cur");
+  if(c) c.scrollIntoView({block:"nearest"});
+}
+
+/* ============================================================
+   KEYS — legend above the key, or the glyph on the keycap
+   ============================================================ */
+// a: legend above  b: gold legend below  f/g: actions  cls: key colour
+// cap: glyph printed on the key itself    holds: does not clear an error
+const K = (o)=>o;
+
+const SIN  = ()=>unaryZ(FN.sin),  COS = ()=>unaryZ(FN.cos), TAN = ()=>unaryZ(FN.tan);
+const ASIN = ()=>unaryZ(FN.asin), ACOS= ()=>unaryZ(FN.acos),ATAN= ()=>unaryZ(FN.atan);
+
+const KEYS = [
+  /* row 1 */
+  K({a:"F", cls:"k-f", wide:true, f:()=>{}}),
+  K({a:"sin", b:"sin<sup>-1</sup>", cls:"k-fn", f:SIN, g:ASIN}),
+  K({a:"cos", b:"cos<sup>-1</sup>", cls:"k-fn", f:COS, g:ACOS}),
+  K({a:"tan", b:"tan<sup>-1</sup>", cls:"k-fn", f:TAN, g:ATAN}),
+  /* row 2 */
+  K({a:"del", cls:"k-prog", f:()=>keyDel(), ctl:true}),
+  K({a:"<i>y</i><sup><i>x</i></sup>", cls:"k-fn", f:powerYX}),
+  K({a:"<i>e</i><sup><i>x</i></sup>", cls:"k-fn", f:()=>unaryZ(FN.exp)}),
+  K({a:"<i>ln</i>", cls:"k-fn", f:()=>unaryZ(FN.ln), holds:true}),
+  K({a:"1/<i>x</i>", cls:"k-fn", f:()=>unaryK(FN.recip), holds:true}),
+  /* row 3 */
+  K({a:"skip", cls:"k-prog", f:()=>keySkip(), ctl:true}),
+  K({a:"&#960;", cls:"k-fn", f:()=>liftIn(PI)}),
+  K({a:'<span class="sqrt">&#8730;<i></i></span>', b:"<i>x</i><sup>2</sup>",
+     cls:"k-fn", f:()=>unaryK(FN.sqrt), g:()=>unaryK(FN.sq)}),
+  K({a:"log", cls:"k-fn", f:()=>unaryZ(FN.log), holds:true}),
+  K({a:"<i>x</i> &#10231; <i>y</i>", cls:"k-fn", sm:true, f:swapXY}),
+  /* row 4 */
+  K({a:"halt", cls:"k-prog", f:()=>keyHalt(), ctl:true}),
+  K({a:"MR", cls:"k-fn", f:()=>liftIn(M.mem)}),
+  K({a:"MS", b:"M+<i>x</i><sup>2</sup>", cls:"k-fn",
+     f:()=>memOp((m,x)=>x), g:()=>memOp((m,x)=>m+x*x)}),
+  K({a:"CHS", cls:"k-fn", f:chs}),
+  K({cap:"EN", cls:"k-iv", f:enter, id:"EN"}),
+  /* row 5 */
+  K({a:"start", cls:"k-prog", f:()=>keyStart(), ctl:true}),
+  K({cap:"7", cls:"k-num", f:()=>digit("7")}),
+  K({cap:"8", cls:"k-num", f:()=>digit("8")}),
+  K({cap:"9", cls:"k-num", f:()=>digit("9")}),
+  K({cap:"&#247;", b:"rad", cls:"k-op", f:()=>binary(FN.div), g:()=>unaryK(v=>v*D2R), holds:true}),
+  /* row 6 */
+  K({blank:true}),
+  K({cap:"4", cls:"k-num", f:()=>digit("4")}),
+  K({cap:"5", cls:"k-num", f:()=>digit("5")}),
+  K({cap:"6", cls:"k-num", f:()=>digit("6")}),
+  K({cap:"&#215;", b:"deg", cls:"k-op", f:()=>binary((y,x)=>y*x), g:()=>unaryK(v=>v*R2D)}),
+  /* row 7 */
+  K({blank:true}),
+  K({cap:"1", cls:"k-num", f:()=>digit("1")}),
+  K({cap:"2", cls:"k-num", f:()=>digit("2")}),
+  K({cap:"3", cls:"k-num", f:()=>digit("3")}),
+  K({cap:"&#8722;", b:"M&#8722;", cls:"k-op", f:()=>binary((y,x)=>y-x), g:()=>memOp((m,x)=>m-x)}),
+  /* row 8 */
+  K({blank:true}),
+  K({cap:"0", cls:"k-num", f:()=>digit("0")}),
+  K({cap:"&#183;", cls:"k-num", f:()=>digit(".")}),
+  K({cap:"C", cls:"k-red", f:rollDown, g:()=>{}, id:"C"}),
+  K({cap:"+", b:"M+", cls:"k-op", f:()=>binary((y,x)=>y+x), g:()=>memOp((m,x)=>m+x)})
+];
+
+function strip(html){
+  const d=document.createElement("div"); d.innerHTML=html;
+  return d.textContent.replace(/\s+/g,"");
+}
+KEYS.forEach(k=>{ if(!k.blank) k.id = k.id || strip(k.cap || k.a); });
+
+const byId = {};
+KEYS.forEach(k=>{ if(!k.blank) byId[k.id] = k; });
+
+const grid = document.getElementById("grid");
+KEYS.forEach(k=>{
+  const cell = document.createElement("div");
+  cell.className = "cell" + (k.wide ? " wide" : "") + (k.blank ? " blank" : "");
+  if(k.blank){ grid.appendChild(cell); return; }
+
+  if(k.a){
+    const t = document.createElement("div");
+    t.className = "lbl" + (k.sm ? " sm" : "");
+    t.innerHTML = k.a;
+    cell.appendChild(t);
+  }
+  const b = document.createElement("button");
+  b.className = "key " + k.cls + (k.cap ? " cap" : "");
+  if(k.cap) b.innerHTML = k.cap;
+  b.setAttribute("aria-label", k.id);
+  b.addEventListener("click", ()=>fire(k,b));
+  cell.appendChild(b);
+
+  if(k.b){
+    const s = document.createElement("div");
+    s.className = "sub"; s.innerHTML = k.b;
+    cell.appendChild(s);
+  }
+  grid.appendChild(cell);
+  k.el = b;
+});
+
+/* ============================================================
+   PROGRAM LAYER — Novus 4515 Mathematician PR
+
+   100 steps of learn-mode programming. No branching, no labels,
+   no subroutines: it records keystrokes and plays them back.
+
+   LOAD   start  wipes program storage and begins the first program
+          halt   records a data-entry pause; digits keyed after one
+                 are variables and are NOT stored
+          skip   ends the current program, begins the next
+          del    erases the last recorded step
+          everything else is recorded AND executed, so the machine
+          debugs itself as you enter the sequence
+   STEP   start  executes one stored step per touch
+   RUN    start  runs from the current point to the next halt or the
+                 end of the program; resumes from a halt
+          skip   abandons the rest of the current program and moves
+                 to the next one. n-1 touches reach the nth program
+          halt   ignored
+
+   An F-shifted key is one step, matching the manual's listings.
+   Over 100 steps, or deleting a skip, shows all decimal points.
+   ============================================================ */
+const MAXSTEPS = 100;
+
+const P = {
+  mode: "LOAD",     // LOAD | STEP | RUN
+  steps: [],        // {k:id, shift:bool} | {ctl:"halt"} | {ctl:"skip"}
+  armed: false,     // LOAD: has start been pressed?
+  pc: 0,            // RUN/STEP: next step to execute
+  paused: false,    // RUN: sitting on a halt, waiting for input
+  awaitVar: false,  // LOAD: the digits being keyed are a variable
+  progErr: false    // programming fault: all decimal points
+};
+
+function progReset(){
+  P.steps = []; P.armed = true; P.pc = 0;
+  P.paused = false; P.awaitVar = false; P.progErr = false;
+}
+
+function progFault(){ P.progErr = true; }
+
+/* ---- boundaries: a skip step separates one program from the next ---- */
+function programStarts(){
+  const out = [0];
+  P.steps.forEach((s,i)=>{ if(s.ctl === "skip") out.push(i+1); });
+  return out;
+}
+function endOfProgram(from){
+  for(let i=from;i<P.steps.length;i++) if(P.steps[i].ctl === "skip") return i;
+  return P.steps.length;
+}
+
+/* ---- LOAD: append a step ---- */
+function record(step){
+  if(!P.armed) return false;                    // start not pressed yet
+  if(P.steps.length >= MAXSTEPS){ progFault(); return false; }
+  P.steps.push(step);
+  return true;
+}
+
+function progDelete(){
+  if(!P.armed || P.steps.length === 0) return;
+  const gone = P.steps.pop();
+  if(gone.ctl === "skip") progFault();          // manual flags this
+}
+
+/* ---- execute one recorded step against the engine ---- */
+function applyStep(step){
+  if(step.ctl) return;                          // halt and skip do no maths
+  const k = byId[step.k];
+  if(!k) return;
+  if(step.shift && k.g) k.g(); else k.f();
+}
+
+/* ---- RUN: advance until a halt, a program boundary, or the end ---- */
+function runFrom(i){
+  let n = 0;
+  const stop = endOfProgram(i);
+  while(i < stop){
+    const s = P.steps[i];
+    if(s.ctl === "halt"){ P.pc = i + 1; P.paused = true; return; }
+    applyStep(s);
+    i++;
+    if(++n > MAXSTEPS + 2) break;               // belt and braces
+    if(M.err) break;
+  }
+  P.pc = i;
+  P.paused = false;
+}
+
+/* ---- the four program-control keys ---- */
+function keyStart(){
+  if(P.mode === "LOAD"){ progReset(); clearAll(); return; }
+  if(P.mode === "STEP"){
+    if(P.pc < P.steps.length){ applyStep(P.steps[P.pc]); P.pc++; }
+    return;
+  }
+  // RUN
+  if(P.steps.length === 0) return;
+  if(P.paused){ runFrom(P.pc); return; }
+  if(P.pc >= P.steps.length) P.pc = 0;          // wrap to the first program
+  runFrom(P.pc);
+  if(P.pc >= endOfProgram(P.pc === 0 ? 0 : P.pc) && !P.paused){
+    const starts = programStarts();
+    P.pc = starts[0];                           // ready to run program 1 again
+  }
+}
+
+function keyHalt(){
+  if(P.mode === "LOAD"){
+    if(record({ctl:"halt"})) P.awaitVar = true;
+  }
+  // ignored in STEP and RUN
+}
+
+function keySkip(){
+  if(P.mode === "LOAD"){ record({ctl:"skip"}); P.awaitVar = false; return; }
+  // RUN: abandon the rest of this program, sit at the start of the next
+  const starts = programStarts();
+  const here = P.paused ? P.pc : P.pc;
+  let next = P.steps.length;
+  for(const s of starts) if(s > here){ next = s; break; }
+  P.pc = next;
+  P.paused = false;
+  if(P.pc < P.steps.length) runFrom(P.pc);
+}
+
+function keyDel(){
+  if(P.mode === "LOAD") progDelete();
+}
+
+/* ---- called from fire() for every ordinary key ---- */
+function progObserve(k, shifted){
+  if(P.mode !== "LOAD" || !P.armed) return;
+  const id = strip(k.a);
+  const isDigit = /^[0-9\u00b7]$/.test(id);
+  if(isDigit){
+    if(P.awaitVar) return;                      // variable, not stored
+    record({k:id, shift:shifted});
+    return;
+  }
+  P.awaitVar = false;
+  record({k:id, shift:shifted});
+}
+
+
+/* ============================================================
+   DISPATCH
+   ============================================================ */
+let sleepTimer = null;
+function stayAwake(){
+  M.asleep = false;
+  clearTimeout(sleepTimer);
+  sleepTimer = setTimeout(()=>{ M.asleep = true; render(); }, 35000);
+}
+
+function fire(k, el){
+  const wasAsleep = M.asleep;
+  stayAwake();
+  P.progErr = false;
+
+  if(k.cls === "k-f"){ M.shift = !M.shift; render(); trace("F"); return; }
+
+  const shifted = !!(M.shift && k.g);
+  const label = shifted ? strip(k.b) : k.id;
+
+  if(M.err){
+    if(k.holds){ trace(label); render(); return; }
+    M.err = false;
+  }
+  if(wasAsleep && k.f === chs){ render(); return; }
+
+  if(k.ctl){
+    k.f();                       // program control: never recorded
+  } else {
+    progObserve(k, shifted);     // LOAD records before executing
+    if(shifted) k.g(); else k.f();
+  }
+  M.shift = false;
+  trace(label);
+  render();
+  if(el){ el.classList.add("hit"); setTimeout(()=>el.classList.remove("hit"),80); }
+}
+
+/* ---------------- mode switch ---------------- */
+const MODES = ["Load","Step","Run"];
+const swl = document.getElementById("swlabels");
+const knob = document.getElementById("knob");
+MODES.forEach((m,i)=>{
+  const b = document.createElement("button");
+  b.textContent = m;
+  b.addEventListener("click", ()=>setMode(m.toUpperCase()));
+  swl.appendChild(b);
+});
+function setMode(mode){
+  P.mode = mode;
+  P.paused = false;
+  if(mode !== "LOAD") P.pc = 0;
+  const i = MODES.findIndex(m=>m.toUpperCase()===mode);
+  knob.style.left = (4 + i*39) + "px";
+  [...swl.children].forEach((b,j)=>b.classList.toggle("on", j===i));
+  trace(mode.toLowerCase());
+  render();
+}
+
+/* ---------------- keyboard ---------------- */
+document.addEventListener("keydown", e=>{
+  if(e.metaKey||e.ctrlKey||e.altKey) return;
+  if(e.key === "Escape"){ clearAll(); trace("CLR"); e.preventDefault(); return; }
+  const map = {
+    "0":"0","1":"1","2":"2","3":"3","4":"4","5":"5","6":"6","7":"7","8":"8","9":"9",
+    ".":"\u00b7", "+":"+", "-":"\u2212", "*":"\u00d7", "/":"\u00f7",
+    "Enter":"EN", "Backspace":"C", "f":"F","F":"F",
+    "c":"CHS","C":"CHS", "x":"x\u27f7y","X":"x\u27f7y", "p":"\u03c0",
+    "s":"start","S":"start", "h":"halt","H":"halt",
+    "k":"skip","K":"skip", "d":"del","D":"del"
+  };
+  const id = map[e.key];
+  if(!id) return;
+  const k = byId[id];
+  if(k){ e.preventDefault(); fire(k, k.el); }
+});
+
+document.getElementById("btnClear").addEventListener("click", ()=>{
+  clearAll(); logLine=[]; logEl.textContent="Ready."; render();
+});
+document.getElementById("btnProg").addEventListener("click", ()=>{
+  P.steps=[]; P.armed=false; P.pc=0; P.paused=false; P.awaitVar=false; P.progErr=false;
+  logLine=[]; logEl.textContent="Program erased."; render();
+});
+
+/* ---------------- fit to viewport ---------------- */
+function fit(){
+  const stage = document.getElementById("stage");
+  const shell = document.getElementById("shell");
+  const avail = document.documentElement.clientWidth - 24;
+  const s = Math.min(1.35, Math.max(0.75, avail / 344));
+  stage.style.transform = "scale(" + s + ")";
+  stage.style.height = (shell.offsetHeight * s) + "px";
+  document.querySelectorAll(".inspect").forEach(el=>{
+    el.style.width = Math.min(344 * s, avail) + "px";
+  });
+}
+window.addEventListener("resize", fit);
+window.addEventListener("orientationchange", ()=>setTimeout(fit,120));
+
+document.addEventListener("pointerdown", e=>{
+  if(e.target.classList && e.target.classList.contains("key") && navigator.vibrate)
+    navigator.vibrate(8);
+}, {passive:true});
+
+if("serviceWorker" in navigator)
+  window.addEventListener("load", ()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+
+setMode("LOAD");
+stayAwake();
+fit();
+render();
+})();
+</script>
+</body>
+</html>
