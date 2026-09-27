@@ -241,7 +241,7 @@
   <div class="brand"><span>NOVUS</span></div>
 
   <div class="filter">
-    <svg id="led" viewBox="0 0 820 200" role="img" aria-label="Calculator display">
+    <svg id="led" viewBox="0 0 470 120" role="img" aria-label="Calculator display">
       <defs>
         <filter id="glow" x="-70%" y="-70%" width="240%" height="240%">
           <feGaussianBlur stdDeviation="3" result="b"/>
@@ -337,7 +337,7 @@ const NS="http://www.w3.org/2000/svg";
 const gDigits = document.getElementById("digits");
 const cells = [];
 (function build(){
-  const W=42, GAP=7, X0=336, Y0=62;
+  const W=42, GAP=7, X0=18, Y0=24;
   for(let i=0;i<POS;i++){
     const ox = X0 + i*(W+GAP), oy = Y0;
     const g = document.createElementNS(NS,"g"), segs = {};
@@ -352,7 +352,7 @@ const cells = [];
       g.appendChild(p); segs[k]=p;
     }
     const dp=document.createElementNS(NS,"circle");
-    dp.setAttribute("cx",ox+38); dp.setAttribute("cy",oy+66);
+    dp.setAttribute("cx",ox+45); dp.setAttribute("cy",oy+66);
     dp.setAttribute("r",3.4); dp.setAttribute("class","seg-off");
     g.appendChild(dp); segs.dp=dp;
     gDigits.appendChild(g); cells.push(segs);
